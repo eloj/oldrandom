@@ -1,7 +1,7 @@
 /*
   cobextractor v1.0 - (C)2005 Eddy L O Jansson <srm_dfr@hotmail.com>
 
-  THIS SOFTWARE IS FREELY REDISTRIBUTABLE
+  THIS SOFTWARE IS DONATED TO THE PUBLIC DOMAIN AND FREELY REDISTRIBUTABLE
 
  Purpose:
 
@@ -32,16 +32,13 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+#include <stdbool.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
 
 typedef unsigned int u32;
 typedef unsigned char u8;
-
-#define false 0
-#define true 1
 
 /*
   stat a file and returns it's size, or -1 on error/file not found
@@ -53,7 +50,7 @@ int file_size(const char* filename)
   return err == 0 ? file_stat.st_size : -1;
 }
 
-int unpack_cob(const char* filename)
+bool unpack_cob(const char* filename)
 {
  /*
    File structure:
@@ -145,7 +142,7 @@ int main(int argc, char* argv[])
   if( argc != 2 )
   {
     printf("usage: %s <filename.cob>\n", argv[0]);
-    return 0;
+    return EXIT_FAILURE;
   }
 
   if( unpack_cob(argv[1]) )
@@ -153,7 +150,8 @@ int main(int argc, char* argv[])
     printf("COB file processed successfully.\n");
   } else {
     printf("Error, couldn't process COB file: \"%s\".\n", argv[1]);
+    return EXIT_FAILURE;
   }
 
-  return 0;
+  return EXIT_SUCCESS;
 }
