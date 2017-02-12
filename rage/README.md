@@ -7,6 +7,9 @@ I have probably 100 variants and attempts at more evolved infectors, but
 I'm pretty sure the reason these were put in the `HISTORY` directory was
 because they assembled and run at some point.
 
+The `RATM_BOM.ASM` file is probably the last version (ca late 1997), and
+probably never worked. I really have no idea.
+
 NOTE: This code won't run on a modern machine. There is no *RISK* here.
 You'd have to go to _extraordinary_ lengths to even build the code, much
 less run it. COM files aren't even recognized by Windows.
