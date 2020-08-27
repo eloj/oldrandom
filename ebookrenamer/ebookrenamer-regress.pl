@@ -8,6 +8,7 @@
 #  ebookrenamer-regress [--check|--generate [infile]] [--suite <file pattern|comma-separated list>]
 #
 use strict;
+use lib '.';
 require ebookfile;
 use Getopt::Long;
 use Data::Dumper;

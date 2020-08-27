@@ -13,6 +13,7 @@
 # To-do:
 #   do a collect pass, and warn if any two or more files map to the same name (req. user resolution)
 #
+use lib '.';
 require ebookfile;
 use Getopt::Long;
 use Data::Dumper;

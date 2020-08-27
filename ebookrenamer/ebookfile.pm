@@ -444,8 +444,8 @@ sub regress_data {
     $s .= $lb.$self->{TITLE}.$rb;
     $s .= $lb.$self->{EXT}.$rb;
     $s .= $lb.$self->{EDITION}.$rb;
-    $s .= $lb.( defined @{$self->{WARNINGS}} ? @{$self->{WARNINGS}} : 0 ).$rb;
-    if(defined @{$self->{WARNINGS}}) {
+    $s .= $lb.( defined $self->{WARNINGS} ? scalar @{$self->{WARNINGS}} : 0 ).$rb;
+    if(defined $self->{WARNINGS}) {
       $s .= $lb."W:".join(",",@{$self->{WARNINGS}}).$rb; # if @{$self->{WARNINGS}} > 0;
     }
     return $s;
