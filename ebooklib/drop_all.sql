@@ -1,0 +1,10 @@
+DROP TABLE book_authors_connect; 
+DROP TABLE book_series_connect;
+DROP TABLE publishers CASCADE;
+DROP TABLE paths CASCADE;
+DROP TABLE series CASCADE;
+DROP TABLE categories CASCADE;
+DROP TABLE formats CASCADE;
+DROP TABLE author_roles;
+DROP TABLE books CASCADE;
+DROP TABLE authors;
