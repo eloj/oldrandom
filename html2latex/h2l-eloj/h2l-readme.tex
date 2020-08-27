@@ -1,0 +1,126 @@
+\documentclass[a4paper,10pt]{article}
+\usepackage[latin1]{inputenc}
+\usepackage{graphicx}
+\usepackage[pdfpagemode=none,pdfstartview=FitH]{hyperref}
+%  HTML PUBLIC "-//W3C//DTD HTML 4.0//EN"
+% "http://www.w3.org/TR/REC-html40/strict.dtd"
+\title{H2L CT3370 - A HTML to LaTeX translator}
+\author{Eddy L O Jansson $<$eddy@klopper.net$>$}
+
+\begin{document}
+\maketitle
+
+
+
+\section{Problem description}
+
+
+
+A program was to be written for translating a subset of
+ HTML into the source language of the type-setting system LaTeX.
+
+
+
+\section{Assumptions}
+
+
+
+The software assumes that the input is reasonably \emph{well formed},
+ specifically with regard to opening tags being properly matched
+ with closing tags. The software does not handle advanced structures,
+ specifically not nested tables. The subset of HTML supported most
+ closely matches HTML4 strict.
+
+
+
+\section{Design and Use}
+
+
+
+I have elected to implement my software in \texttt{perl},
+ using a simple hand-written table-based \emph{parser} for the main
+ document structure, a separate \emph{''tag-parser''} for parsing
+ tag attributes, comments and DTDs, both of which use a
+ \emph{lexing} module which in turn builds on a very simple
+ \emph{scanner}.
+
+
+
+All these modules come together in an utterly simplistic driver,
+ \texttt{h2l.pl} which expects a source document on \texttt{stdin},
+ and will output the translated document onto \texttt{stdout}.
+
+
+
+\section{Implementation}
+
+
+
+The main code of interest is the \texttt{TranslatorTD}
+ module, which makes up the bulk of the \texttt{SLOC}. It is
+ an object which when built takes as input an instance of \texttt{Lexer}.
+ Using the lexer as a source, the translator then uses a rather
+ large parse table to match tags and execute parsing routines
+ that generate output.
+
+
+
+The parse table is a hash table, consisting of a set of
+ states, which each feature a set of tags that are allowed
+ in that state, and for each tag, a reference to the output
+ subroutine to call, and an optional state to move into.
+ The states also features a variety of flags used to guide
+ the parser. For instance, only states flagged with \texttt{ALLOW\_BAREWORDS}
+ will pass the content \emph{between} tags to the output,
+ so it is set for the tags \texttt{P} and \texttt{PRE}
+ for instance, but not for \texttt{HTML}, \texttt{HEAD} or even \texttt{BODY}.
+
+
+
+\subsection{Features supported}
+
+
+
+All the required document tags are supported. In addition,
+ my software supports hyperlinks, images and (simple) tables,
+ and it will pick up author name(s) from meta-tags and apply
+ to the output document. \\ 
+
+\begin{tabular}{ll}
+\textbf{TAG/FEATURE} & \textbf{Support} \\
+Comments & Passed on to output document. Supports tags in comments. \\
+DTD & Passed on to output as a comment. \\
+A & Supported (for non-local links). \\
+B & Supported. \\
+BODY & Supported (is a container, does not support bare words!) \\
+BR & Supported. \\
+CENTER & Supported. \\
+EM & Supported. \\
+HEAD & Parsed for \texttt{TITLE} and \texttt{META}-tags. \\
+HTML & Supported. \\
+I & Supported. \\
+UL & Supported (with nesting). \\
+LI & Supported. \\
+P & Supported. \\
+PRE & Supported. \\
+SUP & Supported. \\
+SUB & Supported. \\
+TITLE & Supported. \\
+IMG & Supported, though no rewriting. \\
+TABLE & Supported. \\
+TR & Supported (no attributes used). \\
+TD & Supported (no attributes used). \\
+TT & Supported. \\
+\end{tabular}
+
+\section{Conclusion}
+
+
+
+My implementation is slow and very rough in parts, but it works reasonably well
+ and implements all the requested \emph{and} optional features of the original
+ specification. This document was translated from HTML using \href{http://gazonk.org/~eloj/}{my} software.
+
+
+
+\end{document}
