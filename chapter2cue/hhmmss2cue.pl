@@ -12,6 +12,7 @@ my $msoffset = 0;
 my $debug = 0;
 my $title = '';
 my $performer = '';
+my $qt = 1;
 my %d;
 
 # Convert HH:MM:SS to MM:SS:FRAME
@@ -27,7 +28,7 @@ sub adjusttime($) {
 	my $ofr = ($mis / 1000 / 60 ) % 75;
 	my $res = sprintf "%02d:%02d:%02d", $om, $os, $ofr;
 
-	return $res;	
+	return $res;
 }
 
 GetOptions(
@@ -35,12 +36,13 @@ GetOptions(
 	'title=s' => \$title,
 	'performer=s' => \$performer,
 	'msoffset=s' => \$msoffset,
+	'quotetitles!' => \$qt,
 	'verbose!' => \$verbose,
 	'debug!' => \$debug
 );
 
 if (! -r $file) {
-	print "Error: couldn't load infile '$file'\n";
+	print "Error: couldn't load file '$file'\n";
 	exit(1);
 }
 
@@ -49,6 +51,9 @@ print STDERR "WARNING: Applying offset of $msoffset ms to all track indeces.\n" 
 open(F, "<".$file);
 
 my $FE="\r\n";
+my $QT="";
+
+$QT = '"' if $qt;
 
 print "FILE \"dummy.wav\" WAVE$FE";
 print "TITLE \"$title\"$FE" unless $title eq '';
@@ -76,8 +81,8 @@ while(my $line = <F>) {
 foreach my $trackno (sort {$a<=>$b} keys %d) {
 	print "TRACK $trackno AUDIO$FE";
 	print "  INDEX 01 ".$d{$trackno}->{'time'}."$FE";
-	print "  TITLE ".$d{$trackno}->{'title'}."$FE" if defined $d{$trackno}->{'title'};
-
+	if (defined $d{$trackno}->{'title'} && $d{$trackno}->{'title'} ne "") {
+		print "  TITLE $QT".$d{$trackno}->{'title'}."$QT$FE";
+	}
 }
 close(F);
-
