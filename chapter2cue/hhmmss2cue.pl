@@ -5,12 +5,14 @@
 use strict;
 
 use Getopt::Long;
+use POSIX qw(strftime);
 
 my $file = 'titles.txt';
 my $verbose = 1;
 my $msoffset = 0;
 my $debug = 0;
 my $title = '';
+my $date = strftime("%Y", gmtime());
 my $performer = '';
 my $qt = 1;
 my %d;
@@ -35,6 +37,7 @@ GetOptions(
 	'file=s' => \$file,
 	'title=s' => \$title,
 	'performer=s' => \$performer,
+	'date=s' => \$date,
 	'msoffset=s' => \$msoffset,
 	'quotetitles!' => \$qt,
 	'verbose!' => \$verbose,
@@ -58,6 +61,7 @@ $QT = '"' if $qt;
 print "FILE \"dummy.wav\" WAVE$FE";
 print "TITLE \"$title\"$FE" unless $title eq '';
 print "PERFORMER \"$performer\"$FE" unless $performer eq '';
+print "REM DATE $date$FE" unless $date eq '';
 my $lno = 0;
 my $track = 1;
 while(my $line = <F>) {
