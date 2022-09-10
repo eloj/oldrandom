@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 #
-# Convert --file consisting of 'HH:MM(:SS) title' lines into cue sheet.
+# Convert --file consisting of 'HH:MM(:SS) title' lines into cue sheet or vorbis-extension comments
 #
 use strict;
 
@@ -15,6 +15,7 @@ my $title = '';
 my $date = strftime("%Y", gmtime());
 my $performer = '';
 my $qt = 1;
+my $format = "cue";
 my %d;
 
 # Convert HH:MM:SS to MM:SS:FRAME
@@ -39,6 +40,7 @@ GetOptions(
 	'performer=s' => \$performer,
 	'date=s' => \$date,
 	'msoffset=s' => \$msoffset,
+	'format=s' => \$format,
 	'quotetitles!' => \$qt,
 	'verbose!' => \$verbose,
 	'debug!' => \$debug
@@ -58,10 +60,12 @@ my $QT="";
 
 $QT = '"' if $qt;
 
-print "FILE \"dummy.wav\" WAVE$FE";
-print "TITLE \"$title\"$FE" unless $title eq '';
-print "PERFORMER \"$performer\"$FE" unless $performer eq '';
-print "REM DATE $date$FE" unless $date eq '';
+if ($format eq "cue") {
+	print "FILE \"dummy.wav\" WAVE$FE";
+	print "TITLE \"$title\"$FE" unless $title eq '';
+	print "PERFORMER \"$performer\"$FE" unless $performer eq '';
+	print "REM DATE $date$FE" unless $date eq '';
+}
 my $lno = 0;
 my $track = 1;
 while(my $line = <F>) {
@@ -83,10 +87,18 @@ while(my $line = <F>) {
 }
 
 foreach my $trackno (sort {$a<=>$b} keys %d) {
-	print "TRACK $trackno AUDIO$FE";
-	print "  INDEX 01 ".$d{$trackno}->{'time'}."$FE";
-	if (defined $d{$trackno}->{'title'} && $d{$trackno}->{'title'} ne "") {
-		print "  TITLE $QT".$d{$trackno}->{'title'}."$QT$FE";
+	if ($format eq "cue") {
+		print "TRACK $trackno AUDIO$FE";
+		print "  INDEX 01 ".$d{$trackno}->{'time'}."$FE";
+		if (defined $d{$trackno}->{'title'} && $d{$trackno}->{'title'} ne "") {
+			print "  TITLE $QT".$d{$trackno}->{'title'}."$QT$FE";
+		}
+	} elsif ($format eq "vorbis") {
+		my $chap = sprintf("CHAPTER%03d", $trackno);
+		print $chap . "=" . $d{$trackno}->{'time'} . "\n";
+		if (defined $d{$trackno}->{'title'} && $d{$trackno}->{'title'} ne "") {
+			print $chap . "NAME=" . $d{$trackno}->{'title'} . "\n";
+		}
 	}
 }
 close(F);
